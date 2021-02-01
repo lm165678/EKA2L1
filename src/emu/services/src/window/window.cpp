@@ -138,10 +138,15 @@ namespace eka2l1::epoc {
 
     void window_server_client::execute_commands(service::ipc_context &ctx, std::vector<ws_cmd> cmds) {
         for (auto &cmd : cmds) {
+            LOG_TRACE(SERVICE_WINDOW, "Guest session address is 0x{:X}", (std::uint64_t)guest_session);
+
             if (cmd.obj_handle == guest_session->unique_id()) {
+                LOG_TRACE(SERVICE_WINDOW, "Executing client");
                 execute_command(ctx, cmd);
             } else {
                 if (auto obj = get_object(cmd.obj_handle)) {
+                    LOG_TRACE(SERVICE_WINDOW, "Executing client children 0x{:X}", (std::uint64_t)obj);
+
                     obj->execute_command(ctx, cmd);
                     obj->on_command_batch_done(ctx);
                 }
